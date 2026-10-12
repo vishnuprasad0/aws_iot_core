@@ -13,7 +13,8 @@ jobs:
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
-      - run: dart pub get
+      # The example is a Flutter app; the "Example app" job resolves it.
+      - run: dart pub get --no-example
       - name: Format
         run: dart format --output=none --set-exit-if-changed .
       - name: Analyze
