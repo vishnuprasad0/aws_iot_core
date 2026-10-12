@@ -1,0 +1,25 @@
+name: aws_iot_core_example
+description: Flutter example for aws_iot_core using Amplify Cognito credentials.
+publish_to: none
+version: 1.0.0
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.32.0"
+
+dependencies:
+  amplify_auth_cognito: ^2.6.0
+  amplify_authenticator: ^2.5.2
+  amplify_flutter: ^2.6.0
+  aws_iot_core:
+    path: ../
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

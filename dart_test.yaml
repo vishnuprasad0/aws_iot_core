@@ -1,0 +1,4 @@
+tags:
+  integration:
+    # Talks to a real AWS IoT endpoint; see test/integration/.
+    timeout: 2x

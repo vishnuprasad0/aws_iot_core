@@ -1,0 +1,14 @@
+# When this file exists, pub ignores .gitignore for publishing, so the
+# generated folders are listed here too.
+.dart_tool/
+build/
+coverage/
+doc/api/
+pubspec.lock
+.github/
+
+example/.dart_tool/
+example/build/
+example/pubspec.lock
+example/.flutter-plugins
+example/.flutter-plugins-dependencies
