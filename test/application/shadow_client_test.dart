@@ -46,7 +46,10 @@ void main() {
 
       expect(doc.version, 7);
       expect(doc.desired, {'on': true});
-      expect(factory.last.subscribed, ['$prefix/get/+']);
+      expect(factory.last.subscribed, [
+        '$prefix/get/accepted',
+        '$prefix/get/rejected',
+      ]);
       expect(factory.last.published.single.topic, '$prefix/get');
     });
 
@@ -200,6 +203,28 @@ void main() {
     expect(factory.last.published.single.topic, '$prefix/name/config/get');
   });
 
+  test('response subscriptions do not overlap delta or documents', () async {
+    // AWS IoT sends one copy of a message per matching subscription, so an
+    // `update/+` filter would make delta listeners receive duplicates.
+    respond('accepted', (_) => {'version': 1});
+    await client.connect();
+    final shadow = client.shadow('thing-1');
+    final deltas = <ShadowDelta>[];
+    shadow.delta.listen(deltas.add);
+    await shadow.update(desired: {'on': true});
+    for (final topic in ['$prefix/update/delta', '$prefix/update/documents']) {
+      expect(
+        factory.last.subscribed.where((f) => topicMatches(f, topic)),
+        hasLength(lessThanOrEqualTo(1)),
+        reason: topic,
+      );
+    }
+    factory.last.deliver('$prefix/update/delta', {
+      'state': {'on': true},
+    });
+    await settle();
+    expect(deltas, hasLength(1));
+  });
   test('delta and documents streams decode messages', () async {
     await client.connect();
     final shadow = client.shadow('thing-1');

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 
 import 'package:aws_iot_core/aws_iot_core.dart';
@@ -153,5 +155,17 @@ void main() {
     expect(client.connect, throwsStateError);
     expect(() => client.subscribe('a'), throwsStateError);
     expect(() => client.shadow('t'), throwsStateError);
+  });
+
+  test('dispose() does not wait for paused listeners', () async {
+    await client.connect();
+    final paused = client.subscribe('a').listen((_) {})..pause();
+    final done = Completer<void>();
+    paused.onDone(done.complete);
+    await client.dispose().timeout(const Duration(seconds: 1));
+    expect(done.isCompleted, isFalse);
+    paused.resume();
+    await done.future.timeout(const Duration(seconds: 1));
+    await paused.cancel();
   });
 }

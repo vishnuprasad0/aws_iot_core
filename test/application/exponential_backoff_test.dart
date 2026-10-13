@@ -44,6 +44,12 @@ void main() {
     expect(policy.delayFor(2), isNull);
   });
 
+  test('very high attempt counts stay finite', () {
+    const capped = ExponentialBackoff(jitter: 0);
+    expect(capped.delayFor(5000), const Duration(seconds: 60));
+    const zero = ExponentialBackoff(initialDelay: Duration.zero, jitter: 0);
+    expect(zero.delayFor(5000), Duration.zero);
+  });
   test('NoReconnect never retries', () {
     expect(const NoReconnect().delayFor(0), isNull);
   });

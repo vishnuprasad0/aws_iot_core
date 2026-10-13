@@ -131,16 +131,27 @@ class AwsIotShadow {
     }
   }
 
+  // Exact topics rather than `$operation/+`: that filter would also match
+  // `update/delta` and `update/documents`, and AWS IoT sends one copy of a
+  // message per matching subscription, so `delta` listeners would get
+  // duplicates.
   Future<void> _ensureResponseSubscription(String operation) async {
-    final filter = '$topicPrefix/$operation/+';
-    _responseSubs[operation] ??= _subscriptions
-        .subscribe(filter, AwsIotQos.atLeastOnce)
-        .listen(_onResponse, onError: (Object _) {});
+    final filters = [
+      for (final outcome in const ['accepted', 'rejected'])
+        '$topicPrefix/$operation/$outcome',
+    ];
+    for (final filter in filters) {
+      _responseSubs[filter] ??= _subscriptions
+          .subscribe(filter, AwsIotQos.atLeastOnce)
+          .listen(_onResponse, onError: (Object _) {});
+    }
     try {
-      await _subscriptions.ready(filter);
+      await Future.wait(filters.map(_subscriptions.ready));
     } catch (_) {
-      // Drop it so the next request subscribes again.
-      await _responseSubs.remove(operation)?.cancel();
+      // Drop them so the next request subscribes again.
+      for (final filter in filters) {
+        await _responseSubs.remove(filter)?.cancel();
+      }
       rethrow;
     }
   }
@@ -169,6 +180,7 @@ class AwsIotShadow {
     }
   }
 
+  // A literal, not `1 << 32`: on the web shifts are 32-bit, so that is 0.
   String _nextToken() =>
-      '${++_counter}-${_random.nextInt(1 << 32).toRadixString(16)}';
+      '${++_counter}-${_random.nextInt(0xFFFFFFFF).toRadixString(16)}';
 }

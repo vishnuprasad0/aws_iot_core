@@ -71,13 +71,16 @@ class SubscriptionManager {
   }
 
   /// Closes every listener's stream.
+  ///
+  /// Does not wait for listeners to receive the done event: a paused
+  /// listener would otherwise block this until it resumes.
   Future<void> close() async {
     final controllers = [
       for (final entry in _entries.values) ...entry.controllers,
     ];
     _entries.clear();
     for (final controller in controllers) {
-      await controller.close();
+      unawaited(controller.close());
     }
   }
 

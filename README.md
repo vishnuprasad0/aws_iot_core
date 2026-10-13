@@ -163,8 +163,8 @@ shadow.documents.listen((e) => print('${e.previous?.version} -> ${e.current?.ver
 ```
 
 The client subscribes to an operation's `/accepted` and `/rejected` topics
-before its first request. Requests time out after `requestTimeout` (10 seconds
-by default) with an `AwsIotTimeoutException`.
+before its first request. Requests time out with an `AwsIotTimeoutException`
+after 10 seconds, or the `requestTimeout` passed to `client.shadow(...)`.
 
 ## Reconnect behaviour
 
@@ -174,8 +174,9 @@ by default) with an `AwsIotTimeoutException`.
   `beforeConnect`, signs a new URL and connects.
 - Subscriptions are restored on the new connection. Callbacks from replaced
   connections are ignored.
-- `connectionState` reports `connecting`, `connected`, `reconnecting` and
-  `disconnected`, and `lastError` holds the most recent failure.
+- `state` is the current `AwsIotConnectionState` (`connecting`, `connected`,
+  `reconnecting` or `disconnected`), `connectionState` is a stream of its
+  changes, and `lastError` holds the most recent failure.
 
 ```dart
 AwsIotClient(
@@ -214,6 +215,7 @@ Dependencies point inward. `AwsIotClient` accepts a `transportFactory`,
 
 ```sh
 dart test                                   # unit tests, no network
+dart test --platform chrome                 # the same tests on the web
 dart test --coverage=coverage
 dart run coverage:format_coverage --lcov --in=coverage \
   --out=coverage/lcov.info --report-on=lib
@@ -239,12 +241,16 @@ topic, and reads and updates a shadow.
 ## Platform support
 
 Android, iOS, macOS, Windows, Linux and the Dart VM use `MqttServerClient`
-over WebSockets. The web uses `MqttBrowserClient`; it compiles, but has not
-been tested against AWS IoT yet.
+over WebSockets; the web uses `MqttBrowserClient`. Publishing, subscribing,
+reconnecting and Device Shadow have been tested against AWS IoT Core on the
+Dart VM and in Chrome.
 
 ## Limitations and roadmap
 
-- Web support needs testing against AWS IoT.
+- **Overlapping filters.** AWS IoT sends one copy of a message for each of
+  a client's subscriptions that match it. If you listen to both `a/#` and
+  `a/b`, a message on `a/b` reaches each listener twice. Subscribe to the
+  wider filter only and pick topics out of it with `topicMatches`.
 - Persistent sessions (`cleanSession: false`) and an offline publish queue.
 - MQTT 5 (via `mqtt5_client`).
 - X.509 (mutual TLS) and custom authorizer authentication.

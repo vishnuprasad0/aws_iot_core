@@ -8,6 +8,7 @@
 //
 // Run with:  dart test --tags integration
 @Tags(['integration'])
+@TestOn('vm')
 library;
 
 import 'dart:io';

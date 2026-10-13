@@ -21,6 +21,8 @@ jobs:
         run: dart analyze --fatal-infos
       - name: Test with coverage
         run: dart test --coverage=coverage
+      - name: Test in Chrome
+        run: dart test --platform chrome
       - name: Coverage report
         run: >-
           dart run coverage:format_coverage --lcov --in=coverage

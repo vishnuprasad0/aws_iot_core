@@ -43,7 +43,10 @@ class ExponentialBackoff implements BackoffPolicy {
   Duration? delayFor(int attempt) {
     final limit = maxAttempts;
     if (limit != null && attempt >= limit) return null;
-    final base = initialDelay.inMicroseconds * pow(multiplier, attempt);
+    final initial = initialDelay.inMicroseconds;
+    // Skipped for a zero delay: after enough attempts the growth factor is
+    // infinite, and 0 * infinity is NaN.
+    final base = initial == 0 ? 0.0 : initial * pow(multiplier, attempt);
     final capped = min(base.toDouble(), maxDelay.inMicroseconds.toDouble());
     final rng = random ?? _defaultRandom;
     final factor = 1 + jitter * (2 * rng.nextDouble() - 1);
