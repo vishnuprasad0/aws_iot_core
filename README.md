@@ -13,9 +13,7 @@ subscriptions and Device Shadow support. Built on
 ## Why
 
 Amplify Flutter has no PubSub category, so there is no official way to talk
-to AWS IoT Core from Flutter
-([aws-amplify/amplify-flutter#1006](https://github.com/aws-amplify/amplify-flutter/issues/1006),
-open since 2021). Apps end up hand-writing the same pieces:
+to AWS IoT Core from Flutter. Connecting to it takes:
 
 - **Signing.** SigV4 query signing for the WebSocket URL, with the session
   token appended after the signature.
@@ -255,3 +253,18 @@ Dart VM and in Chrome.
 - MQTT 5 (via `mqtt5_client`).
 - X.509 (mutual TLS) and custom authorizer authentication.
 - Raising the QoS of an existing filter takes effect on the next reconnect.
+
+## Contributing
+
+Contributions are welcome: bug reports, fixes, new features, tests and
+documentation.
+
+- **Found a bug?** [Open an issue](https://github.com/vishnuprasad0/aws_iot_core/issues/new/choose)
+  with the package version, platform and a minimal reproduction.
+- **Want to fix or improve something?** Fork the repository, make the change
+  on a branch with tests, and open a pull request. For larger changes, such
+  as an item from the roadmap above, open an issue first to agree on the
+  approach.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the checks CI runs, and
+code guidelines.

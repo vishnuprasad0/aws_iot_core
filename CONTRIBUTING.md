@@ -1,6 +1,25 @@
 # Contributing
 
-Thanks for helping improve `aws_iot_core`.
+Thanks for helping improve `aws_iot_core`. Bug reports, fixes, new
+features, tests and documentation are all welcome.
+
+## Ways to contribute
+
+- **Report a bug** with the bug report template. Include a minimal
+  reproduction.
+- **Suggest a feature** with the feature request template. The roadmap in the
+  README lists ideas that are open to contributors.
+- **Fix a bug or improve the code.** Small fixes can go straight to a pull
+  request. For larger changes, open an issue first so we can agree on the
+  approach before you spend time on it.
+
+## Workflow
+
+1. Fork the repository and create a branch from `main`.
+2. Make your change, with tests that fail without it.
+3. Run the checks below.
+4. Open a pull request that describes the problem and the fix, and links the
+   issue it closes.
 
 ## Setup
 
@@ -16,6 +35,7 @@ Run the same checks as CI:
 dart format --output=none --set-exit-if-changed .
 dart analyze --fatal-infos
 dart test --coverage=coverage
+dart test --platform chrome     # needs Chrome installed
 dart run coverage:format_coverage --lcov --in=coverage \
   --out=coverage/lcov.info --report-on=lib
 dart doc
